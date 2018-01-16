@@ -22,27 +22,55 @@ public class IOUState implements LinearState, QueryableState {
     private final Integer value;
     private final Party lender;
     private final Party borrower;
-    private final UniqueIdentifier linearId;
+    private UniqueIdentifier linearId;
+    
+    private final String ETFName;
+    private final Double quantity;
+    private final Double price;
+    private String sponsor;
+    private Actions action;
+    private Double limit;
 
-    /**
-     * @param value the value of the IOU.
-     * @param lender the party issuing the IOU.
-     * @param borrower the party receiving and approving the IOU.
-     */
-    public IOUState(Integer value,
-                    Party lender,
-                    Party borrower)
-    {
-        this.value = value;
-        this.lender = lender;
-        this.borrower = borrower;
-        this.linearId = new UniqueIdentifier();
-    }
+    public IOUState(Integer value, Party lender, Party borrower, String eTFName,
+			Double quantity, Double price, String sponsor, Actions action, Double limit) {
+		super();
+		this.value = value;
+		this.lender = lender;
+		this.borrower = borrower;
+		this.ETFName = eTFName;
+		this.quantity = quantity;
+		this.price = price;
+		this.sponsor = sponsor;
+		this.action = action;
+		this.limit = limit;
+		this.linearId = new UniqueIdentifier();
+	}
 
     public Integer getValue() { return value; }
     public Party getLender() { return lender; }
     public Party getBorrower() { return borrower; }
-    @Override public UniqueIdentifier getLinearId() { return linearId; }
+    public String getSponsor() {
+		return sponsor;
+	}
+	public Actions getAction() {
+		return action;
+	}
+	public Double getLimit() {
+		return limit;
+	}
+	public String getETFName() {
+		return ETFName;
+	}
+	public Double getQuantity() {
+		return quantity;
+	}
+	public Double getPrice() {
+		return price;
+	}
+	public void setLinearId(UniqueIdentifier linearId) {
+		this.linearId = linearId;
+	}
+	@Override public UniqueIdentifier getLinearId() { return linearId; }
     @Override public List<AbstractParty> getParticipants() {
         return Arrays.asList(lender, borrower);
     }
@@ -50,10 +78,17 @@ public class IOUState implements LinearState, QueryableState {
     @Override public PersistentState generateMappedObject(MappedSchema schema) {
         if (schema instanceof IOUSchemaV1) {
             return new IOUSchemaV1.PersistentIOU(
-                    this.lender.getName().toString(),
-                    this.borrower.getName().toString(),
-                    this.value,
-                    this.linearId.getId());
+            		this.lender.getName().toString(),
+            		this.borrower.getName().toString(),
+            		this.value,
+            		this.linearId.getId(),
+            		this.ETFName,
+            		this.quantity,
+            		this.price,
+            		this.sponsor,
+            		this.action,
+            		this.limit
+            		);
         } else {
             throw new IllegalArgumentException("Unrecognised schema $schema");
         }
@@ -65,6 +100,7 @@ public class IOUState implements LinearState, QueryableState {
 
     @Override
     public String toString() {
-        return String.format("%s(iou=%s, lender=%s, borrower=%s, linearId=%s)", getClass().getSimpleName(), value, lender, borrower, linearId);
+        return String.format("%s(iou=%s, lender=%s, borrower=%s, linearId=%s, quantity=%d, price=%d, ETFname=%s, action=%s)", 
+        		getClass().getSimpleName(), value, lender, borrower, linearId, quantity, price, ETFName, action.toString());
     }
 }

@@ -67,6 +67,7 @@ public class ExampleFlow {
         public Initiator(int iouValue, Party otherParty) {
             this.iouValue = iouValue;
             this.otherParty = otherParty;
+            // TODO : add parameters.
         }
 
         @Override
@@ -86,9 +87,21 @@ public class ExampleFlow {
             // Stage 1.
             progressTracker.setCurrentStep(GENERATING_TRANSACTION);
             // Generate an unsigned transaction.
-            IOUState iouState = new IOUState(iouValue, getServiceHub().getMyInfo().getLegalIdentities().get(0), otherParty);
-            final Command<IOUContract.Commands.Create> txCommand = new Command<>(new IOUContract.Commands.Create(),
+            IOUState iouState = new IOUState(iouValue, 
+            		getServiceHub().getMyInfo().getLegalIdentities().get(0), 
+            		otherParty,
+            		null,
+            		null,
+            		null,
+            		null,
+            		null,
+            		null);
+            
+            final Command<IOUContract.Commands.Create> txCommand = new Command<>(
+            		new IOUContract.Commands.Create(),
                     iouState.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList()));
+            
+            
             final TransactionBuilder txBuilder = new TransactionBuilder(notary).withItems(new StateAndContract(iouState, IOU_CONTRACT_ID), txCommand);
 
             // Stage 2.
@@ -100,7 +113,6 @@ public class ExampleFlow {
             progressTracker.setCurrentStep(SIGNING_TRANSACTION);
             // Sign the transaction.
             final SignedTransaction partSignedTx = getServiceHub().signInitialTransaction(txBuilder);
-
 
             FlowSession otherPartySession = initiateFlow(otherParty);
 

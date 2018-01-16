@@ -28,6 +28,8 @@ public class IOUContractTests {
     public void tearDown() {
         unsetCordappPackages();
     }
+    
+    /** 
 
     @Test
     public void transactionMustIncludeCreateCommand() {
@@ -135,4 +137,5 @@ public class IOUContractTests {
             return null;
         });
     }
+    */
 }
