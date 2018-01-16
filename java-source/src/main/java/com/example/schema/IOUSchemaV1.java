@@ -8,35 +8,38 @@ import net.corda.core.schemas.PersistentState;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * An IOUState schema.
  */
-public class IOUSchemaV1 extends MappedSchema {
-    public IOUSchemaV1() {
+public class IOUSchemaV1 extends MappedSchema implements Serializable {
+	
+	private static final long serialVersionUID = 12L;
+
+	public IOUSchemaV1() {
         super(IOUSchema.class, 1, ImmutableList.of(PersistentIOU.class));
     }
 
     @Entity
-    @Table(name = "iou_states")
+    @Table(name = "iou_states_second")
     public static class PersistentIOU extends PersistentState {
         @Column(name = "lender") private final String lender;
         @Column(name = "borrower") private final String borrower;
         @Column(name = "value") private final int value;
         @Column(name = "linear_id") private final UUID linearId;
 
-        @Column(name = "ETFName") private final String ETFName;
-        @Column(name = "quantity") private final Double quantity;
-        @Column(name = "price") private final Double price;
-        @Column(name = "sponsor") private String sponsor;
-        @Column(name = "action") private Actions action;
-        @Column(name = "limit") private Double limit;
+        @Column(name = "etfname", nullable = true) private final String ETFName;
+        @Column(name = "quantity", nullable = true) private final Double quantity;
+        @Column(name = "price", nullable = true) private final Double price;
+        @Column(name = "sponsor", nullable = true) private final String sponsor;
+        @Column(name = "action", nullable = true) private final String action;
+        @Column(name = "limit", nullable = true) private final Double limit;
         
-        
-
         public PersistentIOU(String lender, String borrower, int value, UUID linearId, String eTFName, Double quantity,
-				Double price, String sponsor, Actions action, Double limit) {
+				Double price, String sponsor, String action, Double limit) {
 			super();
 			this.lender = lender;
 			this.borrower = borrower;
@@ -46,7 +49,7 @@ public class IOUSchemaV1 extends MappedSchema {
 			this.quantity = quantity;
 			this.price = price;
 			this.sponsor = sponsor;
-			this.action = action;
+			this.action = (action != null ? action.toString() : null);
 			this.limit = limit;
 		}
 
@@ -59,47 +62,30 @@ public class IOUSchemaV1 extends MappedSchema {
 		public Double getQuantity() {
 			return quantity;
 		}
-
-
-
 		public Double getPrice() {
 			return price;
 		}
-
-
-
 		public String getSponsor() {
 			return sponsor;
 		}
-
-
-
-		public Actions getAction() {
+		public String getAction() {
 			return action;
 		}
-
-
-
 		public Double getLimit() {
 			return limit;
 		}
-
-
-
 		public String getLender() {
             return lender;
         }
-
         public String getBorrower() {
             return borrower;
         }
-
         public int getValue() {
             return value;
         }
-
         public UUID getId() {
             return linearId;
         }
+        
     }
 }

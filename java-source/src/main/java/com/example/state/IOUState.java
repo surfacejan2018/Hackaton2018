@@ -86,7 +86,7 @@ public class IOUState implements LinearState, QueryableState {
             		this.quantity,
             		this.price,
             		this.sponsor,
-            		this.action,
+            		(this.action != null ? this.action.toString() : null),
             		this.limit
             		);
         } else {
@@ -101,6 +101,6 @@ public class IOUState implements LinearState, QueryableState {
     @Override
     public String toString() {
         return String.format("%s(iou=%s, lender=%s, borrower=%s, linearId=%s, quantity=%d, price=%d, ETFname=%s, action=%s)", 
-        		getClass().getSimpleName(), value, lender, borrower, linearId, quantity, price, ETFName, action.toString());
+        		getClass().getSimpleName(), value, lender, borrower, linearId, quantity, price, ETFName, (action!=null?action.toString():null));
     }
 }
