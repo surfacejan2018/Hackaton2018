@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import javax.xml.bind.annotation.*;
 
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -89,22 +90,25 @@ public class ExampleApi {
      */
     @PUT
     @Path("create-iou")
-    public Response createIOU(@QueryParam("iouValue") int iouValue, @QueryParam("partyName") CordaX500Name partyName) throws InterruptedException, ExecutionException {
-        if (iouValue <= 0) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createIOU( NewIOUMessage msg) throws InterruptedException, ExecutionException {
+        logger.info("### Got Message createIOU");
+        logger.info("### Msg: " + msg.toString());
+        if (msg.iouValue <= 0) {
             return Response.status(BAD_REQUEST).entity("Query parameter 'iouValue' must be non-negative.\n").build();
         }
-        if (partyName == null) {
+        if (msg.partyName == null) {
             return Response.status(BAD_REQUEST).entity("Query parameter 'partyName' missing or has wrong format.\n").build();
         }
 
-        final Party otherParty = rpcOps.wellKnownPartyFromX500Name(partyName);
+        final Party otherParty = null;  // rpcOps.wellKnownPartyFromX500Name(msg.partyName);
         if (otherParty == null) {
-            return Response.status(BAD_REQUEST).entity("Party named " + partyName + "cannot be found.\n").build();
+            return Response.status(BAD_REQUEST).entity("Party named " + msg.partyName + "cannot be found.\n").build();
         }
 
         try {
             FlowProgressHandle<SignedTransaction> flowHandle = rpcOps
-                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, iouValue, otherParty);
+                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, msg.iouValue, otherParty);
             flowHandle.getProgress().subscribe(evt -> System.out.printf(">> %s\n", evt));
 
             // The line below blocks and waits for the flow to return.
@@ -112,13 +116,32 @@ public class ExampleApi {
                     .getReturnValue()
                     .get();
 
-            final String msg = String.format("Transaction id %s committed to ledger.\n", result.getId());
-            return Response.status(CREATED).entity(msg).build();
+            final String rmsg = String.format("Transaction id %s committed to ledger.\n", result.getId());
+            return Response.status(CREATED).entity(rmsg).build();
 
         } catch (Throwable ex) {
-            final String msg = ex.getMessage();
+            final String rmsg = ex.getMessage();
             logger.error(ex.getMessage(), ex);
-            return Response.status(BAD_REQUEST).entity(msg).build();
+            return Response.status(BAD_REQUEST).entity(rmsg).build();
         }
+    }
+
+    @XmlRootElement
+    public class NewIOUMessage {
+        @XmlElement public int iouValue;
+        @XmlElement public String partyName;
+        @XmlElement public String etfname;
+        @XmlElement public String quantity;
+        @XmlElement public String price;
+        @XmlElement public String sponsor;
+        @XmlElement public String action;
+        @XmlElement public String limit;
+
+        @Override
+        public String toString() {
+            return this.iouValue + ", " + this.partyName  + ", " + this.etfname  + ", " + this.quantity  + ", " +
+                this.price  + ", " + this.sponsor  + ", " + this.action  + ", " + this.limit;
+        }
+
     }
 }
