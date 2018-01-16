@@ -73,10 +73,20 @@ app.controller('ModalInstanceCtrl', function ($http, $location, $uibModalInstanc
 
             $uibModalInstance.close();
 
-            const createIOUEndpoint = `${apiBaseURL}create-iou?partyName=${modalInstance.form.counterparty}&iouValue=${modalInstance.form.value}`;
+            const createIOUEndpoint = `${apiBaseURL}create-iou`;
 
+            const createIOUMessage = `{
+                "partyName": "${modalInstance.form.counterparty}",
+                "iouValue": "${modalInstance.form.value}",
+                "etfname": "${modalInstance.form.etfname}",
+                "quantity": "${modalInstance.form.quantity}",
+                "price": "${modalInstance.form.price}",
+                "sponsor": "${modalInstance.form.sponsor}",
+                "action": "${modalInstance.form.action}",
+                "limit": "${modalInstance.form.limit}"
+             }`
             // Create PO and handle success / fail responses.
-            $http.put(createIOUEndpoint).then(
+            $http.put(createIOUEndpoint, createIOUMessage).then(
                 (result) => {
                     modalInstance.displayMessage(result);
                     demoApp.getIOUs();
