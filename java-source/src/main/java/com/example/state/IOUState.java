@@ -23,21 +23,30 @@ public class IOUState implements LinearState, QueryableState {
     private final Party lender;
     private final Party borrower;
     private final String etfname;
+    private final Integer quantity;
+    private final Integer price;
+    private final String sponsor;
+    private final String action;
     private final UniqueIdentifier linearId;
 
-    /**
+	/**
      * @param value the value of the IOU.
      * @param lender the party issuing the IOU.
      * @param borrower the party receiving and approving the IOU.
      */
     public IOUState(Integer value,
                     Party lender,
-                    Party borrower, String pEtfname)
+                    Party borrower,  Integer quantity, Integer price,
+        			String sponsor, String action, String pEtfname)
     {
         this.value = value;
         this.lender = lender;
         this.borrower = borrower;
         this.etfname = pEtfname;
+        this.quantity = quantity;
+		this.price = price;
+		this.sponsor = sponsor;
+		this.action = action;
         this.linearId = new UniqueIdentifier();
     }
 
@@ -46,6 +55,22 @@ public class IOUState implements LinearState, QueryableState {
     public String getEtfname() {
 		return etfname;
 	}
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public Integer getPrice() {
+		return price;
+	}
+
+	public String getSponsor() {
+		return sponsor;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
 	public Party getBorrower() { return borrower; }
     @Override public UniqueIdentifier getLinearId() { return linearId; }
     @Override public List<AbstractParty> getParticipants() {
@@ -59,6 +84,10 @@ public class IOUState implements LinearState, QueryableState {
                     this.borrower.getName().toString(),
                     this.value,
                     this.etfname,
+                    this.quantity,
+                    this.price,
+                    this.sponsor,
+                    this.action,
                     this.linearId.getId());
         } else {
             throw new IllegalArgumentException("Unrecognised schema $schema");

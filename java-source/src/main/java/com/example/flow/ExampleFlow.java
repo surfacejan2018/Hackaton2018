@@ -89,7 +89,12 @@ public class ExampleFlow {
             // Stage 1.
             progressTracker.setCurrentStep(GENERATING_TRANSACTION);
             // Generate an unsigned transaction.
-            IOUState iouState = new IOUState(iouValue, getServiceHub().getMyInfo().getLegalIdentities().get(0), otherParty, iouMessage.etfname);
+            IOUState iouState = new IOUState(iouValue, getServiceHub().getMyInfo().getLegalIdentities().get(0), otherParty, 
+            		Integer.valueOf(iouMessage.quantity), 
+            		Integer.valueOf(iouMessage.price), 
+            		iouMessage.sponsor, 
+            		iouMessage.action, 
+            		iouMessage.etfname);
             final Command<IOUContract.Commands.Create> txCommand = new Command<>(new IOUContract.Commands.Create(),
                     iouState.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList()));
             final TransactionBuilder txBuilder = new TransactionBuilder(notary).withItems(new StateAndContract(iouState, IOU_CONTRACT_ID), txCommand);

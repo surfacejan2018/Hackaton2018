@@ -24,14 +24,22 @@ public class IOUSchemaV1 extends MappedSchema {
         @Column(name = "borrower") private final String borrower;
         @Column(name = "value") private final int value;
         @Column(name = "etfname") private final String etfname;
+        @Column(name = "quantity") private final Integer quantity;
+        @Column(name = "price") private final Integer price;
+        @Column(name = "sponsor") private final String sponsor;
+        @Column(name = "action") private final String action;
         @Column(name = "linear_id") private final UUID linearId;
 
 
-        public PersistentIOU(String lender, String borrower, int value, String petfname, UUID linearId) {
+        public PersistentIOU(String lender, String borrower, int value, String petfname, Integer quantity, Integer price, String sponsor, String action, UUID linearId) {
             this.lender = lender;
             this.borrower = borrower;
             this.value = value;
             this.etfname = petfname;
+            this.quantity = quantity;
+            this.price = price;
+            this.sponsor = sponsor;
+            this.action = action;
             this.linearId = linearId;
         }
 
@@ -54,5 +62,21 @@ public class IOUSchemaV1 extends MappedSchema {
 		public UUID getId() {
             return linearId;
         }
+
+		public Integer getQuantity() {
+			return quantity;
+		}
+
+		public Integer getPrice() {
+			return price;
+		}
+
+		public String getSponsor() {
+			return sponsor;
+		}
+
+		public String getAction() {
+			return action;
+		}
     }
 }
