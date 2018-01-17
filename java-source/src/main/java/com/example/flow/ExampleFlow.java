@@ -1,32 +1,21 @@
 package com.example.flow;
 
-import java.util.stream.Collectors;
-
+import co.paralleluniverse.fibers.Suspendable;
 import com.example.contract.IOUContract;
-import com.example.entities.NewIOUMessage;
-import com.example.state.Actions;
 import com.example.state.IOUState;
 import com.google.common.collect.Sets;
-
-import co.paralleluniverse.fibers.Suspendable;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.contracts.StateAndContract;
-import net.corda.core.flows.CollectSignaturesFlow;
-import net.corda.core.flows.FinalityFlow;
-import net.corda.core.flows.FlowException;
-import net.corda.core.flows.FlowLogic;
-import net.corda.core.flows.FlowSession;
-import net.corda.core.flows.InitiatedBy;
-import net.corda.core.flows.InitiatingFlow;
-import net.corda.core.flows.SignTransactionFlow;
-import net.corda.core.flows.StartableByRPC;
+import net.corda.core.flows.*;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 import net.corda.core.utilities.ProgressTracker.Step;
+
+import java.util.stream.Collectors;
 
 import static com.example.contract.IOUContract.IOU_CONTRACT_ID;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
@@ -47,9 +36,8 @@ public class ExampleFlow {
     @StartableByRPC
     public static class Initiator extends FlowLogic<SignedTransaction> {
         
-        private int iouValue;
+        private final int iouValue;
         private final Party otherParty;
-        private NewIOUMessage iouMessage;
 
         private final Step GENERATING_TRANSACTION = new Step("Generating transaction based on new IOU.");
         private final Step VERIFYING_TRANSACTION = new Step("Verifying contract constraints.");
@@ -79,16 +67,9 @@ public class ExampleFlow {
         public Initiator(int iouValue, Party otherParty) {
             this.iouValue = iouValue;
             this.otherParty = otherParty;
-            // TODO : add parameters.
         }
-        
-        public Initiator(NewIOUMessage iouMessage, Party otherParty) {
-			super();
-			this.otherParty = otherParty;
-			this.iouMessage = iouMessage;
-		}
 
-		@Override
+        @Override
         public ProgressTracker getProgressTracker() {
             return progressTracker;
         }
@@ -105,21 +86,9 @@ public class ExampleFlow {
             // Stage 1.
             progressTracker.setCurrentStep(GENERATING_TRANSACTION);
             // Generate an unsigned transaction.
-            IOUState iouState = new IOUState(this.iouMessage.iouValue, 
-            		getServiceHub().getMyInfo().getLegalIdentities().get(0), 
-            		otherParty,
-            		this.iouMessage.etfname != null ? this.iouMessage.etfname : "",
-            		this.iouMessage.quantity != null ? Double.valueOf(this.iouMessage.quantity) : 0,
-            		this.iouMessage.price != null ? Double.valueOf(this.iouMessage.price) : 0,
-            		this.iouMessage.sponsor != null ? this.iouMessage.sponsor : "",
-            		this.iouMessage.action != null ? Actions.valueOf(this.iouMessage.action) : Actions.CREATE,
-            		this.iouMessage.limit != null ? Double.valueOf(this.iouMessage.limit) : 0);
-            
-            final Command<IOUContract.Commands.Create> txCommand = new Command<>(
-            		new IOUContract.Commands.Create(),
+            IOUState iouState = new IOUState(iouValue, getServiceHub().getMyInfo().getLegalIdentities().get(0), otherParty);
+            final Command<IOUContract.Commands.Create> txCommand = new Command<>(new IOUContract.Commands.Create(),
                     iouState.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList()));
-            
-            
             final TransactionBuilder txBuilder = new TransactionBuilder(notary).withItems(new StateAndContract(iouState, IOU_CONTRACT_ID), txCommand);
 
             // Stage 2.
@@ -131,6 +100,7 @@ public class ExampleFlow {
             progressTracker.setCurrentStep(SIGNING_TRANSACTION);
             // Sign the transaction.
             final SignedTransaction partSignedTx = getServiceHub().signInitialTransaction(txBuilder);
+
 
             FlowSession otherPartySession = initiateFlow(otherParty);
 
