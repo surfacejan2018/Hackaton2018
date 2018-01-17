@@ -115,7 +115,7 @@ public class ExampleApi {
 
         try {
             FlowProgressHandle<SignedTransaction> flowHandle = rpcOps
-                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, msg.iouValue, otherParty);
+                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, msg.iouValue, otherParty, msg);
             flowHandle.getProgress().subscribe(evt -> System.out.printf(">> %s\n", evt));
 
             // The line below blocks and waits for the flow to return.

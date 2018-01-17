@@ -2,6 +2,7 @@ package com.example.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.example.contract.IOUContract;
+import com.example.entities.NewIOUMessage;
 import com.example.state.IOUState;
 import com.google.common.collect.Sets;
 import net.corda.core.contracts.Command;
@@ -38,6 +39,7 @@ public class ExampleFlow {
         
         private final int iouValue;
         private final Party otherParty;
+        private final NewIOUMessage iouMessage;
 
         private final Step GENERATING_TRANSACTION = new Step("Generating transaction based on new IOU.");
         private final Step VERIFYING_TRANSACTION = new Step("Verifying contract constraints.");
@@ -64,9 +66,10 @@ public class ExampleFlow {
                 FINALISING_TRANSACTION
         );
 
-        public Initiator(int iouValue, Party otherParty) {
+        public Initiator(int iouValue, Party otherParty, NewIOUMessage pIouMessage) {
             this.iouValue = iouValue;
             this.otherParty = otherParty;
+            this.iouMessage = pIouMessage;
         }
 
         @Override
@@ -86,7 +89,7 @@ public class ExampleFlow {
             // Stage 1.
             progressTracker.setCurrentStep(GENERATING_TRANSACTION);
             // Generate an unsigned transaction.
-            IOUState iouState = new IOUState(iouValue, getServiceHub().getMyInfo().getLegalIdentities().get(0), otherParty);
+            IOUState iouState = new IOUState(iouValue, getServiceHub().getMyInfo().getLegalIdentities().get(0), otherParty, iouMessage.etfname);
             final Command<IOUContract.Commands.Create> txCommand = new Command<>(new IOUContract.Commands.Create(),
                     iouState.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList()));
             final TransactionBuilder txBuilder = new TransactionBuilder(notary).withItems(new StateAndContract(iouState, IOU_CONTRACT_ID), txCommand);

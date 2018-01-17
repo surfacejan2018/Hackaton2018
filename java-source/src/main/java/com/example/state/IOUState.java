@@ -22,6 +22,7 @@ public class IOUState implements LinearState, QueryableState {
     private final Integer value;
     private final Party lender;
     private final Party borrower;
+    private final String etfname;
     private final UniqueIdentifier linearId;
 
     /**
@@ -31,17 +32,21 @@ public class IOUState implements LinearState, QueryableState {
      */
     public IOUState(Integer value,
                     Party lender,
-                    Party borrower)
+                    Party borrower, String pEtfname)
     {
         this.value = value;
         this.lender = lender;
         this.borrower = borrower;
+        this.etfname = pEtfname;
         this.linearId = new UniqueIdentifier();
     }
 
     public Integer getValue() { return value; }
     public Party getLender() { return lender; }
-    public Party getBorrower() { return borrower; }
+    public String getEtfname() {
+		return etfname;
+	}
+	public Party getBorrower() { return borrower; }
     @Override public UniqueIdentifier getLinearId() { return linearId; }
     @Override public List<AbstractParty> getParticipants() {
         return Arrays.asList(lender, borrower);
@@ -53,6 +58,7 @@ public class IOUState implements LinearState, QueryableState {
                     this.lender.getName().toString(),
                     this.borrower.getName().toString(),
                     this.value,
+                    this.etfname,
                     this.linearId.getId());
         } else {
             throw new IllegalArgumentException("Unrecognised schema $schema");
