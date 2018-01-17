@@ -1,11 +1,13 @@
 package com.example.entities;
 
 import net.corda.core.identity.CordaX500Name;
+import net.corda.core.serialization.CordaSerializable;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
+@CordaSerializable
 public class NewIOUMessage {
     @XmlElement public CordaX500Name partyName;
     @XmlElement public int iouValue;
