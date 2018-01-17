@@ -76,6 +76,7 @@ public class ExampleApi {
     @Path("ious")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StateAndRef<IOUState>> getIOUs() {
+        logger.info("### Response: " + rpcOps.vaultQuery(IOUState.class).getStates());
         return rpcOps.vaultQuery(IOUState.class).getStates();
     }
 
@@ -113,7 +114,7 @@ public class ExampleApi {
 
         try {
             FlowProgressHandle<SignedTransaction> flowHandle = rpcOps
-                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, msg, otherParty);
+                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, msg.iouValue, otherParty);
             flowHandle.getProgress().subscribe(evt -> System.out.printf(">> %s\n", evt));
 
             // The line below blocks and waits for the flow to return.
