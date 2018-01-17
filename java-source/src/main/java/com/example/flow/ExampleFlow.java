@@ -82,7 +82,7 @@ public class ExampleFlow {
             // TODO : add parameters.
         }
         
-        public Initiator(Party otherParty, NewIOUMessage iouMessage) {
+        public Initiator(NewIOUMessage iouMessage, Party otherParty) {
 			super();
 			this.otherParty = otherParty;
 			this.iouMessage = iouMessage;
