@@ -35,12 +35,12 @@ COMING WEEKS WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
         <div class="navbar-header">
             <a class="navbar-brand" href="#">{{demoApp.thisNode}}</a>
         </div>
-        <button ng-click="demoApp.openModal()" type="button" class="btn btn-primary navbar-btn">Create IOU</button>
+        <button ng-click="demoApp.openModal()" type="button" class="btn btn-primary navbar-btn">Create ETF</button>
     </div>
 </nav>
 <script type="text/ng-template" id="demoAppModal.html">
     <div class="modal-header">
-        <h4 class="modal-title">Add new IOU</h4>
+        <h4 class="modal-title">Add new ETF</h4>
     </div>
     <form>
         <div class="modal-body">
@@ -82,13 +82,13 @@ COMING WEEKS WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
                 <div class="alert alert-danger" role="alert">
                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                     <span class="sr-only">Error:</span>
-                    Enter valid IOU parameters
+                    Enter valid ETF parameters
                 </div>
             </div>
         </div>
         <div class="modal-footer">
             <button ng-click="modalInstance.cancel()" type="button" class="btn btn-default">Close</button>
-            <button ng-click="modalInstance.create()" type="button" class="btn btn-primary">Create IOU</button>
+            <button ng-click="modalInstance.create()" type="button" class="btn btn-primary">Create ETF</button>
         </div>
     </form>
 </script>
@@ -103,23 +103,23 @@ COMING WEEKS WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
     <div class="col-md-10">
         <div ng-show="!demoApp.ious.length" class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title">There are no recorded IOUs</h3>
+                <h3 class="panel-title">There are no recorded ETFs</h3>
             </div>
-            <div class="panel-body">Use the "Create IOU" button to send an IOU to a peer.</div>
+            <div class="panel-body">Use the "Create ETF" button to send an ETF to a peer.</div>
         </div>
         <div ng-show="demoApp.ious.length" class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title">Recorded IOUs:</h3>
+                <h3 class="panel-title">Recorded ETFs:</h3>
             </div>
         </div>
         <div ng-repeat="iou in demoApp.ious" class="panel panel-default">
             <div class="panel-body">
                 <ul>
                     <li>ETFCustodian: {{iou.lender}}</li>
-                    <li>ETFClientCustodian: {{iou.borrower}}</li>
+                    <li>ClientCustodian: {{iou.borrower}}</li>
                     <li>ETFName: {{iou.etfname}}</li>
                     <li>Value: {{iou.value}}</li>
-                    <li>Quantity: {{iou.quantify}}</li>
+                    <li>Quantity: {{iou.quantity}}</li>
                     <li>Price: {{iou.price}}</li>
                     <li>Sponsor: {{iou.sponsor}}</li>
                     <li>Action: {{iou.action}}</li>
