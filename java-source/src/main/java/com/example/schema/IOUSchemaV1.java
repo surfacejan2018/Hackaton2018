@@ -7,6 +7,7 @@ import net.corda.core.schemas.PersistentState;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 import java.io.Serializable;
@@ -29,7 +30,7 @@ public class IOUSchemaV1 extends MappedSchema implements Serializable {
         @Column(name = "lender") private final String lender;
         @Column(name = "borrower") private final String borrower;
         @Column(name = "value") private final int value;
-        @Column(name = "linear_id") private final UUID linearId;
+        @Column(name = "linear_id") @Id private final UUID linearId;
 
         @Column(name = "etfname", nullable = true) private final String ETFName;
         @Column(name = "quantity", nullable = true) private final Double quantity;
