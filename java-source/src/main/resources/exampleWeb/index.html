@@ -115,9 +115,14 @@ COMING WEEKS WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
         <div ng-repeat="iou in demoApp.ious" class="panel panel-default">
             <div class="panel-body">
                 <ul>
-                    <li>Lender: {{iou.lender}}</li>
-                    <li>Borrower: {{iou.borrower}}</li>
+                    <li>ETFCustodian: {{iou.lender}}</li>
+                    <li>ETFClientCustodian: {{iou.borrower}}</li>
+                    <li>ETFName: {{iou.etfname}}</li>
                     <li>Value: {{iou.value}}</li>
+                    <li>Quantity: {{iou.quantify}}</li>
+                    <li>Price: {{iou.price}}</li>
+                    <li>Sponsor: {{iou.sponsor}}</li>
+                    <li>Action: {{iou.action}}</li>
                 </ul>
             </div>
         </div>
