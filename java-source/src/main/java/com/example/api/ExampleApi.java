@@ -1,5 +1,6 @@
 package com.example.api;
 
+import com.example.entities.NewIOUMessage;
 import com.example.flow.ExampleFlow;
 import com.example.state.IOUState;
 import com.google.common.collect.ImmutableList;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -94,6 +96,8 @@ public class ExampleApi {
     public Response createIOU( NewIOUMessage msg) throws InterruptedException, ExecutionException {
         logger.info("### Got Message createIOU");
         logger.info("### Msg: " + msg.toString());
+        System.out.println("### Msg: " + msg.toString());
+
         if (msg.iouValue <= 0) {
             return Response.status(BAD_REQUEST).entity("Query parameter 'iouValue' must be non-negative.\n").build();
         }
@@ -101,14 +105,15 @@ public class ExampleApi {
             return Response.status(BAD_REQUEST).entity("Query parameter 'partyName' missing or has wrong format.\n").build();
         }
 
-        final Party otherParty = null;  // rpcOps.wellKnownPartyFromX500Name(msg.partyName);
+        final Party otherParty = rpcOps.wellKnownPartyFromX500Name(msg.partyName);
         if (otherParty == null) {
             return Response.status(BAD_REQUEST).entity("Party named " + msg.partyName + "cannot be found.\n").build();
         }
 
+
         try {
             FlowProgressHandle<SignedTransaction> flowHandle = rpcOps
-                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, msg.iouValue, otherParty);
+                    .startTrackedFlowDynamic(ExampleFlow.Initiator.class, msg, otherParty);
             flowHandle.getProgress().subscribe(evt -> System.out.printf(">> %s\n", evt));
 
             // The line below blocks and waits for the flow to return.
@@ -124,24 +129,7 @@ public class ExampleApi {
             logger.error(ex.getMessage(), ex);
             return Response.status(BAD_REQUEST).entity(rmsg).build();
         }
-    }
-
-    @XmlRootElement
-    public class NewIOUMessage {
-        @XmlElement public int iouValue;
-        @XmlElement public String partyName;
-        @XmlElement public String etfname;
-        @XmlElement public String quantity;
-        @XmlElement public String price;
-        @XmlElement public String sponsor;
-        @XmlElement public String action;
-        @XmlElement public String limit;
-
-        @Override
-        public String toString() {
-            return this.iouValue + ", " + this.partyName  + ", " + this.etfname  + ", " + this.quantity  + ", " +
-                this.price  + ", " + this.sponsor  + ", " + this.action  + ", " + this.limit;
-        }
 
     }
+
 }
